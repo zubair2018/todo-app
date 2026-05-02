@@ -130,9 +130,12 @@ The recommended deployment approach for this project is:
 After backend deployment, the frontend environment variable should be updated to the deployed backend URL before final frontend deployment.
 
 ### Deployed links
-- Frontend Link: `Add your Netlify link here`
-- Backend Link: `Add your Render link here`
-- GitHub Repository: `Add your GitHub repo link here`
+- Frontend Link: https://zubi-todo.netlify.app/
+
+- Backend Link: https://todo-app-v6ip.onrender.com
+
+- GitHub Repository: https://github.com/zubair2018/todo-app
+
 - Submission Form Link: `Add Google Form link here`
 
 ## Challenges faced
