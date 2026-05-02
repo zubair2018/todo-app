@@ -69,7 +69,7 @@ npm install
 
 
 PORT=5000
-MONGO_URI=mongodb_connection_string
+MONGO_URI=mongodb+srv://mirzubair321_db_user:7kpSBNAnH1b5o4ZF@db1.kbspniy.mongodb.net/?appName=db1
 
 
 4. Start backend server:
@@ -77,7 +77,7 @@ MONGO_URI=mongodb_connection_string
 npm run dev
 
 
-The backend runs on `http://localhost:5000` if the MongoDB connection is correct.
+The backend runs on `http://localhost:5000` .
 
 ## Frontend setup
 
@@ -136,7 +136,6 @@ After backend deployment, the frontend environment variable should be updated to
 
 - GitHub Repository: https://github.com/zubair2018/todo-app
 
-- Submission Form Link: `Add Google Form link here`
 
 ## Challenges faced
 
