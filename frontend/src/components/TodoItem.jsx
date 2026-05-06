@@ -1,4 +1,4 @@
-function TodoItem({ todo, onDelete, onToggle }) {
+function TodoItem({ todo, onDelete, onToggle, onEdit }) {
   return (
     <div className="todo-item">
       <div>
@@ -8,9 +8,13 @@ function TodoItem({ todo, onDelete, onToggle }) {
           {todo.status}
         </span>
       </div>
+
       <div className="actions">
+        <button onClick={() => onEdit(todo)}>Edit</button>
         <button onClick={() => onToggle(todo._id)}>Status</button>
-        <button onClick={() => onDelete(todo._id)} className="delete-btn">Delete</button>
+        <button onClick={() => onDelete(todo._id)} className="delete-btn">
+          Delete
+        </button>
       </div>
     </div>
   );

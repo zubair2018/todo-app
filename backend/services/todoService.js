@@ -3,27 +3,32 @@ const Todo = require('../models/Todo');
 const getTodos = async (query) => {
   const filter = {};
 
-  if (query.status) {
-    filter.status = query.status;
-  }
-
+  // keeping search in backend so frontend stays simple
   if (query.search) {
     filter.title = { $regex: query.search, $options: 'i' };
   }
 
-  return await Todo.find(filter).sort({ createdAt: -1 });
+  if (query.status) {
+    filter.status = query.status;
+  }
+
+  return Todo.find(filter).sort({ createdAt: -1 });
 };
 
 const createTodo = async (data) => {
-  return await Todo.create(data);
+  const todo = new Todo(data);
+  return todo.save();
 };
 
 const updateTodo = async (id, data) => {
-  return await Todo.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+  return Todo.findByIdAndUpdate(id, data, {
+    new: true,
+    runValidators: true
+  });
 };
 
 const deleteTodo = async (id) => {
-  return await Todo.findByIdAndDelete(id);
+  return Todo.findByIdAndDelete(id);
 };
 
 const toggleTodoStatus = async (id) => {
@@ -33,8 +38,13 @@ const toggleTodoStatus = async (id) => {
     return null;
   }
 
-  todo.status = todo.status === 'pending' ? 'completed' : 'pending';
-  return await todo.save();
+  if (todo.status === 'completed') {
+    todo.status = 'pending';
+  } else {
+    todo.status = 'completed';
+  }
+
+  return todo.save();
 };
 
 module.exports = {
@@ -42,5 +52,5 @@ module.exports = {
   createTodo,
   updateTodo,
   deleteTodo,
-  toggleTodoStatus,
+  toggleTodoStatus
 };

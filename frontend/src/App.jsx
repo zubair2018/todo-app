@@ -4,6 +4,7 @@ import TodoItem from './components/TodoItem';
 import {
   getTodos,
   createTodo,
+  updateTodo,
   deleteTodo,
   toggleStatus,
 } from './services/todoService';
@@ -14,50 +15,38 @@ function App() {
   const [statusFilter, setStatusFilter] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // this function loads all tasks from backend
+  const [editId, setEditId] = useState('');
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
 
   const loadTasks = async () => {
-    try {
-      setLoading(true);
-      setError('');
+    setLoading(true);
+    setError('');
 
+    try {
       const response = await getTodos({
         search: searchText,
-        status: statusFilter,
+        status: statusFilter
       });
 
-
-      // making sure response is array before saving it
-
-      if (Array.isArray(response.data)) {
-        setTaskList(response.data);
-      } else {
-        setTaskList([]);
-        setError('Data format is not correct');
-      }
+      setTaskList(response.data);
     } catch (err) {
-      setTaskList([]);
       setError('Could not fetch tasks');
-    } finally {
-      setLoading(false);
+      setTaskList([]);
     }
-  };
-  
 
-  // load tasks on first render and also when search/filter changes
+    setLoading(false);
+  };
 
   useEffect(() => {
     loadTasks();
   }, [searchText, statusFilter]);
 
   const handleAddTask = async (taskData) => {
+    setError('');
+
     try {
       await createTodo(taskData);
-
-
-      // after adding task, reload latest list
-
       loadTasks();
     } catch (err) {
       setError('Could not add task');
@@ -65,10 +54,10 @@ function App() {
   };
 
   const handleDeleteTask = async (id) => {
+    setError('');
+
     try {
       await deleteTodo(id);
-
-      // refresh list after delete
       loadTasks();
     } catch (err) {
       setError('Could not delete task');
@@ -76,21 +65,50 @@ function App() {
   };
 
   const handleStatusChange = async (id) => {
+    setError('');
+
     try {
       await toggleStatus(id);
-
-
-      // reload so updated status shows on screen
-      
       loadTasks();
     } catch (err) {
       setError('Could not update status');
     }
   };
 
-  const completedCount = taskList.filter(
-    (item) => item.status === 'completed'
-  ).length;
+  const startEdit = (todo) => {
+    setEditId(todo._id);
+    setEditTitle(todo.title);
+    setEditDescription(todo.description || '');
+  };
+
+  const cancelEdit = () => {
+    setEditId('');
+    setEditTitle('');
+    setEditDescription('');
+  };
+
+  const saveEdit = async () => {
+    if (!editTitle.trim()) {
+      setError('Title is required');
+      return;
+    }
+
+    setError('');
+
+    try {
+      await updateTodo(editId, {
+        title: editTitle,
+        description: editDescription
+      });
+
+      cancelEdit();
+      loadTasks();
+    } catch (err) {
+      setError('Could not update task');
+    }
+  };
+
+  const completedCount = taskList.filter((item) => item.status === 'completed').length;
 
   return (
     <div className="container">
@@ -119,6 +137,31 @@ function App() {
         </select>
       </div>
 
+      {editId && (
+        <div className="edit-box">
+          <h3>Edit Task</h3>
+
+          <input
+            type="text"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            placeholder="Task title"
+          />
+
+          <input
+            type="text"
+            value={editDescription}
+            onChange={(e) => setEditDescription(e.target.value)}
+            placeholder="Task description"
+          />
+
+          <div className="actions">
+            <button onClick={saveEdit}>Update</button>
+            <button onClick={cancelEdit} className="cancel-btn">Cancel</button>
+          </div>
+        </div>
+      )}
+
       {loading && <p>Loading tasks...</p>}
       {error && <p className="error">{error}</p>}
 
@@ -130,6 +173,7 @@ function App() {
               todo={todo}
               onDelete={handleDeleteTask}
               onToggle={handleStatusChange}
+              onEdit={startEdit}
             />
           ))
         ) : (
